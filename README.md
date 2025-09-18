@@ -1,4 +1,4 @@
-# 🔴 Prototype d’Outil d’Émulation d’un Adversaire IoT — PPE ING5-Cyber
+# 🔴 Prototype d’Outil d’Émulation d’un Adversaire IoT — PPE ING4-Cyber
 
 ## 📌 Description
 Ce projet consiste à développer un **prototype d’outil capable de simuler le comportement d’un adversaire ciblant des dispositifs IoT** (Internet des Objets).  
