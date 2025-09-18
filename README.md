@@ -24,22 +24,6 @@ Projet réalisé dans le cadre du **PPE (Projet Pluridisciplinaire en Équipe)**
 - Intégrer un **pipeline de détection et visualisation** des anomalies.
 - Garantir un cadre **éthique et sécurisé** pour l’expérimentation.
 
----
-
-##  Technologies & Outils
-###  Cybersécurité
-- Metasploit, Nmap, Wireshark, Aircrack-ng, Burp Suite  
-
-###  IoT & Réseaux
-- Scapy, KillerBee, MQTT Explorer, LoRaWAN Sniffer  
-- Contiki-NG, RIOT OS (émulation IoT)
-
-###  Simulation & Virtualisation
-- Docker, Kubernetes, GNS3, NS-3  
-
-###  Analyse & Détection
-- ELK Stack (Elasticsearch, Logstash, Kibana), Splunk, Grafana  
-- Python (Pandas, Scikit-learn, TensorFlow)
 
 ---
 
