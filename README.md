@@ -38,13 +38,11 @@ Méthodologie : **Agile (Scrum/Kanban)** avec sprints, suivi régulier et valida
 ---
 
 ##  Planning (6+ mois)
-- **M1–M2** : Analyse du sujet, cadrage, choix technologiques.  
-- **M3–M4** : Mise en place de l’infrastructure de simulation (Docker/GNS3).  
-- **M5–M6** : Implémentation des premiers scénarios d’attaque.  
-- **M7–M8** : Collecte et visualisation (ELK/Grafana).  
-- **M9** : Intégration modèles de détection ML/IA.  
-- **M10** : Tests, évaluation, validation.  
-- **M11–M12** : Rédaction finale, valorisation, soutenance.
+![Déroulement](images/deroulement.png)
+![Valorisation](images/valorisation.png)
+![Calendrier](images/calendrier.png)
+
+
 
 ---
 
