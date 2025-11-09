@@ -1,6 +1,6 @@
 # 🛰️ Prototype d’Outil d’Émulation d’un Adversaire IoT — PPE ING4-Cyber
 
-## 📌 Description
+##  Description
 Ce projet consiste à développer un **prototype d’outil capable de simuler le comportement d’un adversaire ciblant des dispositifs IoT** (Internet des Objets).  
 L’objectif est de reproduire différents scénarios d’attaques (intrusions, manipulations de données, dénis de service, compromission de capteurs, etc.) dans un environnement **contrôlé et reproductible**, afin d’évaluer la **résilience, la sécurité et la robustesse** des systèmes IoT.  
 
@@ -13,7 +13,7 @@ Projet réalisé dans le cadre du **PPE (Projet Pluridisciplinaire en Équipe)**
 
 ---
 
-## 🎯 Objectifs
+##  Objectifs
 - Développer un **émulateur d’attaques IoT** modulable et extensible.  
 - Proposer une **plateforme de simulation** pour différents scénarios :  
   - reconnaissance réseau,  
@@ -26,7 +26,7 @@ Projet réalisé dans le cadre du **PPE (Projet Pluridisciplinaire en Équipe)**
 
 ---
 
-## 🧩 Architecture du Système IoT
+##  Architecture du Système IoT
 
 ### 🔹 Schéma de topologie OT / IT
 Ce schéma illustre la séparation logique entre les couches **IT (niveau 3-5)** et **OT (niveau 0-2)** du réseau industriel, avec les VLANs correspondants et les protocoles utilisés.
@@ -42,14 +42,14 @@ Ce schéma illustre la séparation logique entre les couches **IT (niveau 3-5)**
 
 ---
 
-## 📄 Note de cadrage du projet
+##  Note de cadrage du projet
 La note de cadrage définit le **contexte**, le **périmètre**, les **objectifs**, les **contraintes éthiques** et les **livrables** du projet.
 
-📘 [Consulter la note de cadrage (PDF)](note-de-cadrage-ppe.pdf)
+ [Consulter la note de cadrage (PDF)](note-de-cadrage-ppe.pdf)
 
 ---
 
-## 👥 Équipe & Collaboration
+##  Équipe & Collaboration
 Projet mené par une **équipe pluridisciplinaire d’étudiants** en :
 - Cybersécurité offensive & défensive,  
 - Réseaux IoT,  
@@ -59,14 +59,14 @@ Méthodologie : **Agile (Scrum / Kanban)** avec sprints, suivi régulier et vali
 
 ---
 
-## 🗓️ Planning (6+ mois)
+##  Planning (6+ mois)
 ![Déroulement](images/deroulement.png)
 ![Valorisation](images/valorisation.png)
 ![Calendrier](images/calendrier.png)
 
 ---
 
-## ⚖️ Contraintes Éthiques & Réglementaires
+##  Contraintes Éthiques & Réglementaires
 - **Usage strictement académique et expérimental** (lab fermé, réseau isolé).  
 - Respect du **cadre légal** (aucune attaque sur des infrastructures réelles ou publiques).  
 - Mise en place de **procédures d’arrêt d’urgence (kill-switch)**.  
@@ -74,7 +74,7 @@ Méthodologie : **Agile (Scrum / Kanban)** avec sprints, suivi régulier et vali
 
 ---
 
-## 🚀 Valorisation & Communication
+##  Valorisation & Communication
 - Documentation technique et pédagogique.  
 - Démonstrations lors des soutenances PPE.  
 - Publication possible de jeux de données (logs anonymisés).  
@@ -82,7 +82,7 @@ Méthodologie : **Agile (Scrum / Kanban)** avec sprints, suivi régulier et vali
 
 ---
 
-## 📂 Documents inclus
+##  Documents inclus
 | Fichier | Description |
 |----------|-------------|
 | [`note-de-cadrage-ppe.pdf`](note-de-cadrage-ppe.pdf) | Note de cadrage du projet |
