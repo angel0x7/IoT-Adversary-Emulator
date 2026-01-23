@@ -1,0 +1,90 @@
+#include <WiFiNINA.h>
+#include <PubSubClient.h>
+#include <WiFiUdp.h>
+#include <coap-simple.h>
+#include "Arduino_MKRIoTCarrier.h"
+
+// =======================
+// Wi-Fi
+// =======================
+const char* ssid = "Ma_Box_Isolee";
+const char* password = "12345678";
+
+// =======================
+// MQTT
+// =======================
+const char* mqtt_server = "192.168.10.11";
+
+// =======================
+// CoAP
+// =======================
+IPAddress coapServer(192,168,10,11);  // IP de la VM
+const int coapPort = 5683;
+
+// =======================
+WiFiClient wifiClient;
+PubSubClient mqttClient(wifiClient);
+
+WiFiUDP udp;
+Coap coap(udp);
+
+MKRIoTCarrier carrier;
+unsigned long lastMsg = 0;
+
+// =======================
+void setup_wifi() {
+  while (WiFi.begin(ssid, password) != WL_CONNECTED) {
+    delay(3000);
+  }
+  Serial.print("IP MKR1010 : ");
+  Serial.println(WiFi.localIP());
+}
+
+// =======================
+void reconnectMQTT() {
+  while (!mqttClient.connected()) {
+    mqttClient.connect("MKR1010Client");
+  }
+}
+
+// =======================
+void setup() {
+  Serial.begin(9600);
+  carrier.begin();
+
+  setup_wifi();
+  mqttClient.setServer(mqtt_server, 1883);
+  coap.start();
+
+  Serial.println("🟢 MQTT + CoAP prêts");
+}
+
+// =======================
+void loop() {
+  if (!mqttClient.connected()) reconnectMQTT();
+  mqttClient.loop();
+  coap.loop();
+
+  if (millis() - lastMsg > 5000) {
+    lastMsg = millis();
+
+    float t = carrier.Env.readTemperature();
+    float h = carrier.Env.readHumidity();
+    float p = carrier.Pressure.readPressure();
+
+    String payload = "{";
+    payload += "\"temperature\":" + String(t) + ",";
+    payload += "\"humidity\":" + String(h) + ",";
+    payload += "\"pressure\":" + String(p);
+    payload += "}";
+
+    // MQTT
+    mqttClient.publish("iot/mkr1010/sensors", payload.c_str());
+    Serial.println("📡 MQTT envoyé");
+
+    // CoAP
+    coap.put(coapServer, coapPort, "sensors", payload.c_str());
+ 
+    Serial.println("📡 CoAP envoyé");
+  }
+}
