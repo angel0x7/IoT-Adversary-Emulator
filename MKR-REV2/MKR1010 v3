@@ -8,7 +8,7 @@ const char* ssid = "Ma_Box_Isolee";
 const char* password = "12345678";
 
 // ===== Serveur =====
-const char* server_ip = "192.168.10.4";
+const char* server_ip = "192.168.10.9";
 const int mqttPort = 1883;
 const int coapPort = 5683;
 
@@ -47,25 +47,30 @@ void reconnect_mqtt() {
 }
 
 // ===== CoAP POST (UDP brut) =====
+uint16_t messageId = 0; // Variable globale pour l'ID de message
+
 void sendCoAP(String payload) {
-  // En-tête CoAP minimal
+  messageId++; // On incrémente à chaque envoi
+  
   byte coapPacket[256];
   int index = 0;
 
-  coapPacket[index++] = 0x40; // Version 1, Confirmable
+  // 0x50 = Version 1, Non-Confirmable (NON) 
+  // On passe en NON-confirmable pour éviter d'attendre un ACK que vous ne gérez pas
+  coapPacket[index++] = 0x50; 
   coapPacket[index++] = 0x02; // Code 0.02 = POST
-  coapPacket[index++] = 0x00; // Message ID
-  coapPacket[index++] = 0x01;
+  
+  // Message ID dynamique (découpé en 2 octets)
+  coapPacket[index++] = (messageId >> 8) & 0xFF; 
+  coapPacket[index++] = messageId & 0xFF;
 
   // Option Uri-Path = "sensors"
   coapPacket[index++] = 0xB7;
   memcpy(&coapPacket[index], "sensors", 7);
   index += 7;
 
-  // Payload marker
-  coapPacket[index++] = 0xFF;
+  coapPacket[index++] = 0xFF; // Payload marker
 
-  // Payload JSON
   payload.getBytes(&coapPacket[index], payload.length() + 1);
   index += payload.length();
 
@@ -73,9 +78,10 @@ void sendCoAP(String payload) {
   udp.write(coapPacket, index);
   udp.endPacket();
 
-  Serial.println("CoAP envoyé : " + payload);
+  Serial.print("CoAP envoyé (ID: ");
+  Serial.print(messageId);
+  Serial.println(") : " + payload);
 }
-
 // ===== SETUP =====
 void setup() {
   Serial.begin(9600);
