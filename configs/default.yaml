@@ -1,0 +1,38 @@
+# Configuration par défaut - IoT Adversary Emulator
+
+network:
+  interface: "eth0"
+  range: "192.168.10.0/24"
+  
+server:
+  host: "0.0.0.0"
+  port: 8080
+  debug: false
+  
+mqtt:
+  default_port: 1883
+  timeout: 10
+  qos: 0
+  
+attacks:
+  mitm:
+    enabled: true
+    default_interval: 5
+  injection:
+    enabled: true
+    default_interval: 5
+  flood:
+    enabled: true
+    rate: 0.1
+  deauth:
+    enabled: false  # WiFi only
+    
+logging:
+  level: "INFO"
+  file: "data/logs/app.log"
+  max_size_mb: 10
+  backup_count: 5
+  
+database:
+  type: "sqlite"
+  path: "data/emulator.db"
