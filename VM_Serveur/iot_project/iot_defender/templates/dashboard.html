@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IoT Defender Dashboard</title>
+    <script src="{{ url_for('static', filename='chart.js') }}"></script>	
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            margin: 40px;
+        }
+
+        h1 { text-align: center; }
+	.charts-container {
+	    display: flex;
+    	    gap: 30px;
+	}
+
+	.chart-card {
+	    flex: 1;
+	}
+
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.4);
+        }
+
+        select {
+            padding: 8px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+        }
+
+        canvas {
+            margin-top: 20px;
+        }
+
+        .logs {
+            background: black;
+            height: 300px;
+            overflow-y: scroll;
+            font-family: monospace;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .log-line {
+            margin-bottom: 4px;
+        }
+
+        .critical { color: red; }
+        .warning { color: orange; }
+        .ok { color: lightgreen; }
+        .status-bar {
+	    display: flex;
+	    justify-content: space-between;
+	    align-items: center;
+	    margin-bottom: 30px;
+	}
+
+	.status-right {
+	    display: flex;
+	    gap: 20px;
+	    align-items: center;
+	}
+
+	.score {
+	    font-size: 28px;
+	    font-weight: bold;
+	}
+
+	.status {
+	    padding: 10px 20px;
+	    border-radius: 8px;
+	    font-weight: bold;
+	}
+
+	.status.ok { background: green; }
+	.status.warning { background: orange; }
+	.status.critical { background: red; }
+
+    </style>
+</head>
+
+<body>
+
+<h1>🛡️ IoT Defender – Security Dashboard</h1>
+<div class="status-bar">
+    <div>
+        <h2>Network Status</h2>
+    </div>
+
+    <div class="status-right">
+        <div id="securityScore" class="score">100%</div>
+        <div id="globalStatus" class="status ok">OK</div>
+    </div>
+</div>
+
+<div class="card">
+    <label>Choisir la donnée à afficher :</label>
+    <select id="metricSelector">
+        <option value="temperature">Température</option>
+        <option value="humidity">Humidité</option>
+        <option value="pressure">Pression</option>
+    </select>
+</div>
+
+<div class="charts-container">
+    <div class="card chart-card">
+        <h3>MQTT Data</h3>
+        <canvas id="mqttChart"></canvas>
+    </div>
+
+    <div class="card chart-card">
+        <h3>CoAP Data</h3>
+        <canvas id="coapChart"></canvas>
+    </div>
+</div>
+
+
+<div class="card">
+    <h3>Security Logs</h3>
+    <div class="logs" id="logContainer"></div>
+</div>
+
+<script>
+
+let mqttChart, coapChart;
+let currentMetric = "temperature";
+
+async function fetchData() {
+    const res = await fetch("/api/data?metric=" + currentMetric);
+    const data = await res.json();
+
+    updateChart(mqttChart, data.mqtt);
+    updateChart(coapChart, data.coap);
+    updateLogs(data.logs);
+}
+
+function updateChart(chart, dataset) {
+    chart.data.labels = dataset.timestamps;
+    chart.data.datasets[0].data = dataset.values;
+    chart.update();
+}
+
+function updateLogs(logs) {
+    const container = document.getElementById("logContainer");
+    container.innerHTML = "";
+
+    logs.reverse().forEach(log => {
+        const div = document.createElement("div");
+        div.classList.add("log-line");
+
+        if (log.severity === "CRITICAL") div.classList.add("critical");
+        else if (log.severity === "WARNING") div.classList.add("warning");
+        else div.classList.add("ok");
+
+        div.innerText = `[${log.time}] ${log.severity} | ΔT:${log.delta_temperature} ΔH:${log.delta_humidity} ΔP:${log.delta_pressure}`;
+        container.appendChild(div);
+    });
+}
+
+function createChart(ctx) {
+    return new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: '',
+                data: [],
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    ticks: {
+                        maxRotation: 0,
+                        autoSkip: true,
+                        maxTicksLimit: 6
+                    }
+                }
+            }
+        }
+    });
+}
+
+window.onload = function() {
+    mqttChart = createChart(document.getElementById('mqttChart'));
+    coapChart = createChart(document.getElementById('coapChart'));
+
+    document.getElementById("metricSelector").addEventListener("change", function() {
+        currentMetric = this.value;
+        fetchData();
+    });
+
+    setInterval(fetchData, 3000);
+    fetchData();
+}
+
+</script>
+
+</body>
+</html>
