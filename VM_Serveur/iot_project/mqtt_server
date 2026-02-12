@@ -1,0 +1,87 @@
+import json
+import paho.mqtt.client as mqtt
+from influxdb import InfluxDBClient
+
+
+# Paramètres de connexion
+
+MQTT_BROKER = "192.168.10.6"
+MQTT_PORT = 1883
+MQTT_TOPICS = [("iot/mkr1010/sensors", 0), ("iot/unoR4wifi/sensors_state", 0)]
+
+INFLUX_HOST = "localhost"
+INFLUX_PORT = 8086
+INFLUX_DB = "iotdata"
+
+# Connexion à InfluxDB
+
+try:
+    influx = InfluxDBClient(host=INFLUX_HOST, port=INFLUX_PORT)
+    influx.create_database(INFLUX_DB)
+    influx.switch_database(INFLUX_DB)
+    print(f"Connecté à InfluxDB : base '{INFLUX_DB}' prête.")
+except Exception as e:
+    print(f"Erreur connexion InfluxDB : {e}")
+    exit(1)
+
+
+#  Callback à la réception de message MQTT
+
+def on_message(client, userdata, msg):
+    try:
+        payload = msg.payload.decode("utf-8")
+        print(f"\n Topic reçu : {msg.topic}")
+        print(f"Payload brut : {payload}")
+
+        data = json.loads(payload)
+
+        # Sélection de la table en fonction du topic
+        if msg.topic == "iot/mkr1010/sensors":
+            measurement = "sensors"
+        elif msg.topic == "iot/unoR4wifi/sensors_state":
+            measurement = "sensors_state"
+        else:
+            print(" Topic inconnu, ignoré.")
+            return
+
+        # Préparation du point InfluxDB
+        json_body = [{
+            "measurement": measurement,
+            "tags": {
+                "device": "MKR1010" if "mkr1010" in msg.topic else "UNO_R4"
+            },
+            "fields": {}
+        }]
+
+        # Ajout de chaque valeur numérique/boolean
+        for k, v in data.items():
+            if isinstance(v, (int, float, bool)):
+                json_body[0]["fields"][k] = float(v) if not isinstance(v, bool) else int(v)
+
+        # Écriture en base
+        influx.write_points(json_body)
+        print(f" Données écrites dans '{measurement}': {json_body}")
+
+    except Exception as e:
+        print(f"Erreur traitement message : {e}")
+
+
+#  Initialisation du client MQTT
+
+client = mqtt.Client()
+client.on_message = on_message
+
+try:
+    client.connect(MQTT_BROKER, MQTT_PORT, 60)
+    print(f" Connecté au broker MQTT : {MQTT_BROKER}:{MQTT_PORT}")
+except Exception as e:
+    print(f" Erreur connexion MQTT : {e}")
+    exit(1)
+
+# S'abonner aux deux topics
+for topic, qos in MQTT_TOPICS:
+    client.subscribe(topic)
+    print(f" Abonné à : {topic}")
+
+# Boucle infinie
+client.loop_forever()
