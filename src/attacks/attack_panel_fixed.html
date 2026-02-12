@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Security Lab - Control Panel</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --danger: #ef4444;
+            --danger-dark: #dc2626;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+        
+        .card:hover {
+            border-color: var(--primary);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .card-header .icon {
+            font-size: 1.5rem;
+        }
+        
+        .card-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        
+        .stat-card {
+            background: var(--bg-main);
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .stat-card.danger {
+            border-left-color: var(--danger);
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .device-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .device-item {
+            background: var(--bg-main);
+            padding: 16px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+        
+        .device-item:hover {
+            background: var(--bg-hover);
+        }
+        
+        .device-info h3 {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .device-info p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-family: monospace;
+        }
+        
+        .badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .badge.online {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+        
+        .badge.offline {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+        
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .attack-types {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .attack-option {
+            background: var(--bg-main);
+            padding: 16px;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .attack-option:hover {
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+        
+        .attack-option.active {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .attack-option h3 {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+        
+        .attack-option p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover:not(:disabled) {
+            background: var(--danger-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .console {
+            background: var(--bg-main);
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+        }
+        
+        .console-line {
+            margin-bottom: 8px;
+            display: flex;
+            gap: 8px;
+            align-items: baseline;
+        }
+        
+        .console-time {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+        
+        .console-tag {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .console-tag.info {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--primary);
+        }
+        
+        .console-tag.success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+        
+        .console-tag.warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+        
+        .console-tag.error {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+        
+        .console-message {
+            color: var(--text-primary);
+            flex: 1;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        
+        .metric-card {
+            background: var(--bg-main);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 IoT Security Lab</h1>
+            <p>Advanced Network Security Testing Platform</p>
+        </div>
+        
+        <div class="grid">
+            <!-- Network Info -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">🌐</span>
+                    <h2>Network Information</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Broker IP</div>
+                        <div class="stat-value" id="broker-ip" style="font-size: 1.1rem;">—</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Devices</div>
+                        <div class="stat-value" id="devices-count">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Topics</div>
+                        <div class="stat-value" id="topics-count">0</div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-label">Status</div>
+                        <div class="stat-value" id="network-status" style="font-size: 0.9rem;">Idle</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-primary" id="scan-btn" onclick="scanNetwork()">
+                        Scan Network
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Devices -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">📡</span>
+                    <h2>Connected Devices</h2>
+                </div>
+                
+                <div class="device-list" id="device-list">
+                    <div class="device-item">
+                        <div class="device-info">
+                            <h3>No devices</h3>
+                            <p>Run network scan first</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Attack Config -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">⚔️</span>
+                    <h2>Attack Configuration</h2>
+                </div>
+                
+                <div class="form-group">
+                    <label>Attack Type</label>
+                    <div class="attack-types">
+                        <div class="attack-option" onclick="selectAttack('mitm')">
+                            <h3>🔄 MITM</h3>
+                            <p>Man-in-the-Middle</p>
+                        </div>
+                        <div class="attack-option" onclick="selectAttack('inject')">
+                            <h3>💉 Inject</h3>
+                            <p>Data Injection</p>
+                        </div>
+                        <div class="attack-option" onclick="selectAttack('flood')">
+                            <h3>🌊 Flood</h3>
+                            <p>DoS Attack</p>
+                        </div>
+                        <div class="attack-option" onclick="selectAttack('deauth')">
+                            <h3>❌ Deauth</h3>
+                            <p>Disconnect</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Target Device</label>
+                    <select id="target-device">
+                        <option value="">Select a target...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>MQTT Topic</label>
+                    <input type="text" id="mqtt-topic" value="iot/mkr1010/sensors" placeholder="iot/device/topic">
+                </div>
+                
+                <div class="form-group">
+                    <label>Interval (seconds)</label>
+                    <input type="number" id="interval" value="5" min="1" max="60">
+                </div>
+            </div>
+            
+            <!-- Attack Control -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">🎯</span>
+                    <h2>Attack Control</h2>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <button class="btn btn-danger" id="launch-btn" onclick="launchAttack()">
+                        Launch Attack
+                    </button>
+                    <button class="btn btn-primary" id="stop-btn" onclick="stopAttack()" disabled>
+                        Stop Attack
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="card full-width">
+                <div class="card-header">
+                    <span class="icon">📊</span>
+                    <h2>Attack Statistics</h2>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value" id="packets-sent">0</div>
+                        <div class="metric-label">Packets Sent</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="packets-blocked">0</div>
+                        <div class="metric-label">Blocked</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="fake-injected">0</div>
+                        <div class="metric-label">Fake Injected</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="uptime">00:00</div>
+                        <div class="metric-label">Uptime</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Console -->
+            <div class="card full-width">
+                <div class="card-header">
+                    <span class="icon">💻</span>
+                    <h2>Console Output</h2>
+                </div>
+                
+                <div class="console" id="console">
+                    <div class="console-line">
+                        <span class="console-time">[00:00:00]</span>
+                        <span class="console-tag success">[SYSTEM]</span>
+                        <span class="console-message">IoT Security Lab initialized</span>
+                    </div>
+                    <div class="console-line">
+                        <span class="console-time">[00:00:00]</span>
+                        <span class="console-tag info">[INFO]</span>
+                        <span class="console-message">Ready for security testing</span>
+                    </div>
+                    <div class="console-line">
+                        <span class="console-time">[00:00:00]</span>
+                        <span class="console-tag warning">[WARNING]</span>
+                        <span class="console-message">Use only in authorized lab environments</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let selectedAttack = null;
+        let attackActive = false;
+        let statsInterval = null;
+        let uptimeInterval = null;
+        let attackStartTime = null;
+        
+        const API_BASE = 'http://localhost:8080';
+        
+        function getTime() {
+            return new Date().toLocaleTimeString();
+        }
+        
+        function addConsoleLog(message, type = 'info') {
+            const console = document.getElementById('console');
+            const line = document.createElement('div');
+            line.className = 'console-line';
+            
+            line.innerHTML = `
+                <span class="console-time">[${getTime()}]</span>
+                <span class="console-tag ${type}">[${type.toUpperCase()}]</span>
+                <span class="console-message">${message}</span>
+            `;
+            
+            console.appendChild(line);
+            console.scrollTop = console.scrollHeight;
+        }
+        
+        async function scanNetwork() {
+            addConsoleLog('Starting network scan...', 'info');
+            const btn = document.getElementById('scan-btn');
+            btn.disabled = true;
+            btn.textContent = 'Scanning...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/scan`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('broker-ip').textContent = data.broker || '—';
+                    document.getElementById('devices-count').textContent = data.devices.length;
+                    document.getElementById('topics-count').textContent = '2';
+                    
+                    addConsoleLog('Network scan completed', 'success');
+                    addConsoleLog(`Found MQTT broker at ${data.broker}`, 'success');
+                    addConsoleLog(`Discovered ${data.devices.length} device(s)`, 'success');
+                    
+                    if (data.mkr1010) {
+                        addConsoleLog(`MKR1010 detected at ${data.mkr1010}`, 'success');
+                    }
+                    
+                    updateDeviceList(data.devices);
+                } else {
+                    addConsoleLog(`Scan failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                addConsoleLog(`Network error: ${error.message}`, 'error');
+                addConsoleLog('Make sure Python server is running on port 8080', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Scan Network';
+            }
+        }
+        
+        function updateDeviceList(devices) {
+            const deviceList = document.getElementById('device-list');
+            const targetSelect = document.getElementById('target-device');
+            
+            deviceList.innerHTML = '';
+            targetSelect.innerHTML = '<option value="">Select a target...</option>';
+            
+            devices.forEach(device => {
+                const item = document.createElement('div');
+                item.className = 'device-item';
+                item.innerHTML = `
+                    <div class="device-info">
+                        <h3>${device.name}</h3>
+                        <p>${device.ip}</p>
+                    </div>
+                    <span class="badge ${device.status}">${device.status}</span>
+                `;
+                deviceList.appendChild(item);
+                
+                if (device.type === 'iot') {
+                    const option = document.createElement('option');
+                    option.value = device.ip;
+                    option.textContent = `${device.name} (${device.ip})`;
+                    targetSelect.appendChild(option);
+                }
+            });
+        }
+        
+        function selectAttack(type) {
+            selectedAttack = type;
+            document.querySelectorAll('.attack-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
+            event.target.closest('.attack-option').classList.add('active');
+            
+            const attackNames = {
+                mitm: 'MITM Attack',
+                inject: 'Data Injection',
+                flood: 'Flood Attack',
+                deauth: 'Deauth Attack'
+            };
+            
+            addConsoleLog(`Selected: ${attackNames[type]}`, 'info');
+        }
+        
+        async function launchAttack() {
+            const target = document.getElementById('target-device').value;
+            const topic = document.getElementById('mqtt-topic').value;
+            const interval = document.getElementById('interval').value;
+            
+            if (!target) {
+                addConsoleLog('No target device selected', 'error');
+                return;
+            }
+            
+            if (!selectedAttack) {
+                addConsoleLog('No attack type selected', 'error');
+                return;
+            }
+            
+            addConsoleLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'warning');
+            addConsoleLog('Launching attack...', 'warning');
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/attack/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        attack_type: selectedAttack,
+                        target: target,
+                        topic: topic,
+                        interval: interval
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    attackActive = true;
+                    attackStartTime = Date.now();
+                    document.getElementById('launch-btn').disabled = true;
+                    document.getElementById('stop-btn').disabled = false;
+                    
+                    addConsoleLog('Attack initiated successfully!', 'success');
+                    addConsoleLog(`Target: ${data.target}`, 'info');
+                    addConsoleLog(`Broker: ${data.broker}`, 'info');
+                    addConsoleLog(`Topic: ${data.topic}`, 'info');
+                    addConsoleLog(`Type: ${selectedAttack.toUpperCase()}`, 'info');
+                    
+                    // Démarrer la récupération des stats
+                    startStatsPolling();
+                    startUptimeCounter();
+                } else {
+                    addConsoleLog(`Attack failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                addConsoleLog(`Error launching attack: ${error.message}`, 'error');
+            }
+        }
+        
+        async function stopAttack() {
+            addConsoleLog('Stopping attack...', 'warning');
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/attack/stop`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    attackActive = false;
+                    clearInterval(statsInterval);
+                    clearInterval(uptimeInterval);
+                    
+                    document.getElementById('launch-btn').disabled = false;
+                    document.getElementById('stop-btn').disabled = true;
+                    
+                    addConsoleLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+                    addConsoleLog('Attack stopped', 'success');
+                    addConsoleLog(`Total packets: ${data.stats.packets_sent}`, 'success');
+                    addConsoleLog(`Blocked: ${data.stats.packets_blocked}`, 'success');
+                    addConsoleLog(`Fake injected: ${data.stats.fake_injected}`, 'success');
+                } else {
+                    addConsoleLog(`Error stopping attack: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                addConsoleLog(`Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function updateStats() {
+            if (!attackActive) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/stats`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('packets-sent').textContent = data.stats.packets_sent;
+                    document.getElementById('packets-blocked').textContent = data.stats.packets_blocked;
+                    document.getElementById('fake-injected').textContent = data.stats.fake_injected;
+                }
+            } catch (error) {
+                console.error('Error fetching stats:', error);
+            }
+        }
+        
+        function startStatsPolling() {
+            // Récupérer les stats toutes les 2 secondes
+            statsInterval = setInterval(updateStats, 2000);
+        }
+        
+        function startUptimeCounter() {
+            uptimeInterval = setInterval(() => {
+                if (!attackActive) {
+                    clearInterval(uptimeInterval);
+                    return;
+                }
+                const elapsed = Math.floor((Date.now() - attackStartTime) / 1000);
+                const mins = Math.floor(elapsed / 60);
+                const secs = elapsed % 60;
+                document.getElementById('uptime').textContent = 
+                    `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
