@@ -1,0 +1,50 @@
+import aiocoap
+import asyncio
+import json
+from aiocoap import resource, Message, BAD_REQUEST, CONTENT, Context
+from influxdb import InfluxDBClient
+
+# InfluxDB config
+INFLUX_HOST = "localhost"
+INFLUX_PORT = 8086
+INFLUX_DB = "iotdata"
+
+influx = InfluxDBClient(host=INFLUX_HOST, port=INFLUX_PORT)
+influx.switch_database(INFLUX_DB)
+
+class SensorResource(resource.Resource):
+    async def render_post(self, request):
+        try:
+            payload = request.payload.decode("utf-8")
+            print("📥 Reçu CoAP :", payload)
+            data = json.loads(payload)
+
+            json_body = [{
+                "measurement": "sensors_coap",
+                "tags": {"device": "MKR1010"},
+                "fields": {
+                    "temperature": float(data["temperature"]),
+                    "humidity": float(data["humidity"]),
+                    "pressure": float(data["pressure"])
+                }
+            }]
+
+            influx.write_points(json_body)
+            print("✅ Écrit dans InfluxDB (CoAP)")
+
+            return Message(code=aiocoap.CONTENT, payload=b"OK")
+
+        except Exception as e:
+            print("❌ Erreur CoAP :", e)
+            return Message(code=BAD_REQUEST, payload=b"ERROR")
+
+async def main():
+    root = resource.Site()
+    root.add_resource(['sensors'], SensorResource())
+
+    await Context.create_server_context(root, bind=('0.0.0.0', 5683))
+    print("🚀 Serveur CoAP démarré sur UDP 5683")
+    await asyncio.get_running_loop().create_future()
+
+if __name__ == "__main__":
+    asyncio.run(main())
