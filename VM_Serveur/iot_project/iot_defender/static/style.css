@@ -1,0 +1,36 @@
+body {
+    margin:0;
+    background:#0f172a;
+    color:white;
+    font-family:Arial;
+}
+
+header {
+    padding:20px;
+    background:#1e293b;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.grid {
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:20px;
+    padding:20px;
+}
+
+.card {
+    background:#1e293b;
+    padding:20px;
+    border-radius:12px;
+}
+
+#alertBox {
+    padding:10px 20px;
+    border-radius:8px;
+}
+
+.OK { background:green; }
+.WARNING { background:orange; }
+.CRITICAL { background:red; }
