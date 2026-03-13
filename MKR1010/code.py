@@ -4,11 +4,11 @@
 #include "Arduino_MKRIoTCarrier.h"
 
 // ===== Wi-Fi =====
-const char* ssid = "Ma_Box_Isolee";
+const char* ssid = "Greg";
 const char* password = "12345678";
 
 // ===== Serveur =====
-const char* server_ip = "192.168.10.6";
+const char* server_ip = "172.20.10.4";
 const int mqttPort = 1883;
 const int coapPort = 5683;
 
