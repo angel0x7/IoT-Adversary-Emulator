@@ -2,26 +2,37 @@
 <html>
 <head>
     <title>IoT Defender Dashboard</title>
-    <script src="{{ url_for('static', filename='chart.js') }}"></script>	
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='chart.js')}}"></script>
 
     <style>
         body {
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             background: #0f172a;
             color: white;
             margin: 40px;
         }
 
-        h1 { text-align: center; }
-	.charts-container {
-	    display: flex;
-    	    gap: 30px;
-	}
+        h1 { 
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
 
-	.chart-card {
-	    flex: 1;
-	}
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 16px;
+            margin-bottom: 40px;
+        }
+
+        .charts-container {
+            display: flex;
+            gap: 30px;
+        }
+
+        .chart-card {
+            flex: 1;
+        }
 
         .card {
             background: #1e293b;
@@ -36,6 +47,9 @@
             border-radius: 8px;
             border: none;
             font-size: 16px;
+            background: #334155;
+            color: white;
+            cursor: pointer;
         }
 
         canvas {
@@ -43,58 +57,155 @@
         }
 
         .logs {
-            background: black;
-            height: 300px;
-            overflow-y: scroll;
-            font-family: monospace;
-            padding: 10px;
+            background: #000;
+            height: 350px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            padding: 15px;
             border-radius: 10px;
+            font-size: 13px;
         }
 
         .log-line {
-            margin-bottom: 4px;
+            margin-bottom: 8px;
+            padding: 5px;
+            border-left: 3px solid transparent;
+            padding-left: 10px;
         }
 
-        .critical { color: red; }
-        .warning { color: orange; }
-        .ok { color: lightgreen; }
+        .log-line.critical { 
+            color: #ff4444; 
+            border-left-color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+        .log-line.warning { 
+            color: #ffaa00; 
+            border-left-color: #ffaa00;
+            background: rgba(255, 170, 0, 0.1);
+        }
+        .log-line.ok { 
+            color: #44ff88; 
+            border-left-color: #44ff88;
+        }
+
         .status-bar {
-	    display: flex;
-	    justify-content: space-between;
-	    align-items: center;
-	    margin-bottom: 30px;
-	}
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+        }
 
-	.status-right {
-	    display: flex;
-	    gap: 20px;
-	    align-items: center;
-	}
+        .status-left h2 {
+            margin: 0;
+            font-size: 24px;
+        }
 
-	.score {
-	    font-size: 28px;
-	    font-weight: bold;
-	}
+        .status-left .network-info {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-top: 5px;
+        }
 
-	.status {
-	    padding: 10px 20px;
-	    border-radius: 8px;
-	    font-weight: bold;
-	}
+        .status-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
 
-	.status.ok { background: green; }
-	.status.warning { background: orange; }
-	.status.critical { background: red; }
+        .score {
+            font-size: 32px;
+            font-weight: bold;
+            padding: 10px 20px;
+            background: #334155;
+            border-radius: 8px;
+        }
+
+        .status {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .status.ok { 
+            background: #10b981; 
+            color: white;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+        }
+        .status.warning { 
+            background: #f59e0b; 
+            color: white;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+        }
+        .status.critical { 
+            background: #ef4444; 
+            color: white;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .attack-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: #334155;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #60a5fa;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .latest-message {
+            background: #334155;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #e2e8f0;
+            border-left: 4px solid #60a5fa;
+        }
 
     </style>
 </head>
 
 <body>
 
-<h1>🛡️ IoT Defender – Security Dashboard</h1>
+<h1> IoT Defender</h1>
+<div class="subtitle">Security Dashboard – Real-time Network Monitoring</div>
+
 <div class="status-bar">
-    <div>
+    <div class="status-left">
         <h2>Network Status</h2>
+        <div class="network-info">
+            <span id="lastUpdate">Last update: --:--:--</span>
+        </div>
     </div>
 
     <div class="status-right">
@@ -104,29 +215,63 @@
 </div>
 
 <div class="card">
-    <label>Choisir la donnée à afficher :</label>
+    <h3> Attack Statistics</h3>
+    <div class="attack-stats">
+        <div class="stat-card">
+            <div class="stat-value" id="totalAttacks">0</div>
+            <div class="stat-label">Total Threats</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="criticalAttacks">0</div>
+            <div class="stat-label">Critical</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="ddosDetected">0</div>
+            <div class="stat-label">DDoS Detected</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="mitmDetected">0</div>
+            <div class="stat-label">MITM Detected</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="injectionDetected">0</div>
+            <div class="stat-label">Data Injection</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="corruptionDetected">0</div>
+            <div class="stat-label">Data Corruption</div>
+        </div>
+    </div>
+    
+    <div class="latest-message" id="latestMessage">
+         System operational - No anomalies detected
+    </div>
+</div>
+
+<div class="card">
+    <label><strong>Choisir la donnée à afficher :</strong></label>
     <select id="metricSelector">
-        <option value="temperature">Température</option>
-        <option value="humidity">Humidité</option>
-        <option value="pressure">Pression</option>
+        <option value="temperature">Température (°C)</option>
+        <option value="humidity">Humidité (%)</option>
+        <option value="pressure">Pression (hPa)</option>
     </select>
 </div>
 
 <div class="charts-container">
     <div class="card chart-card">
-        <h3>MQTT Data</h3>
+        <h3> MQTT Protocol</h3>
         <canvas id="mqttChart"></canvas>
     </div>
 
     <div class="card chart-card">
-        <h3>CoAP Data</h3>
+        <h3> CoAP Protocol</h3>
         <canvas id="coapChart"></canvas>
     </div>
 </div>
 
 
 <div class="card">
-    <h3>Security Logs</h3>
+    <h3> Security Logs (Last 50 events)</h3>
     <div class="logs" id="logContainer"></div>
 </div>
 
@@ -136,74 +281,196 @@ let mqttChart, coapChart;
 let currentMetric = "temperature";
 
 async function fetchData() {
-    const res = await fetch("/api/data?metric=" + currentMetric);
-    const data = await res.json();
+    try {
+        const res = await fetch("/api/data?metric=" + currentMetric);
+        const data = await res.json();
 
-    updateChart(mqttChart, data.mqtt);
-    updateChart(coapChart, data.coap);
-    updateLogs(data.logs);
+        updateChart(mqttChart, data.mqtt, "MQTT");
+        updateChart(coapChart, data.coap, "CoAP");
+        updateLogs(data.logs);
+        updateStatus(data);
+        updateAttackStats(data.attack_stats);
+        
+        // Mise à jour de l'heure
+        const now = new Date();
+        document.getElementById("lastUpdate").innerText = 
+            `Last update: ${now.toLocaleTimeString('fr-FR', { timeZone: 'Europe/Paris' })}`;
+    } catch (error) {
+        console.error("Erreur fetch data:", error);
+    }
 }
 
-function updateChart(chart, dataset) {
+function updateChart(chart, dataset, label) {
     chart.data.labels = dataset.timestamps;
     chart.data.datasets[0].data = dataset.values;
-    chart.update();
+    chart.data.datasets[0].label = label + " - " + currentMetric;
+    chart.update('none'); // Animation désactivée pour plus de fluidité
+}
+
+function updateStatus(data) {
+    const score = data.resilience_score || 100;
+    const severity = data.global_severity || "OK";
+    const message = data.latest_message || "No data";
+    
+    // Mise à jour du score
+    document.getElementById("securityScore").innerText = score + "%";
+    
+    // Mise à jour du statut global
+    const statusBox = document.getElementById("globalStatus");
+    statusBox.className = "status"; // reset
+    
+    if (severity === "CRITICAL") {
+        statusBox.classList.add("critical");
+        statusBox.innerText = "CRITICAL";
+    } else if (severity === "WARNING") {
+        statusBox.classList.add("warning");
+        statusBox.innerText = "WARNING";
+    } else {
+        statusBox.classList.add("ok");
+        statusBox.innerText = "OK";
+    }
+    
+    // Mise à jour du dernier message
+    const latestMsg = document.getElementById("latestMessage");
+    latestMsg.innerText = message;
+    
+    // Coloration du message selon la sévérité
+    if (severity === "CRITICAL") {
+        latestMsg.style.borderLeftColor = "#ef4444";
+        latestMsg.style.color = "#fca5a5";
+    } else if (severity === "WARNING") {
+        latestMsg.style.borderLeftColor = "#f59e0b";
+        latestMsg.style.color = "#fcd34d";
+    } else {
+        latestMsg.style.borderLeftColor = "#10b981";
+        latestMsg.style.color = "#6ee7b7";
+    }
+}
+
+function updateAttackStats(stats) {
+    if (!stats) return;
+    
+    document.getElementById("totalAttacks").innerText = stats.total_attacks || 0;
+    document.getElementById("criticalAttacks").innerText = stats.critical_attacks || 0;
+    document.getElementById("ddosDetected").innerText = stats.ddos_detected || 0;
+    document.getElementById("mitmDetected").innerText = stats.mitm_detected || 0;
+    document.getElementById("injectionDetected").innerText = stats.injection_detected || 0;
+    document.getElementById("corruptionDetected").innerText = stats.corruption_detected || 0;
 }
 
 function updateLogs(logs) {
     const container = document.getElementById("logContainer");
     container.innerHTML = "";
 
-    logs.reverse().forEach(log => {
+    // Logs du plus récent au plus ancien
+    logs.forEach(log => {
         const div = document.createElement("div");
         div.classList.add("log-line");
 
-        if (log.severity === "CRITICAL") div.classList.add("critical");
-        else if (log.severity === "WARNING") div.classList.add("warning");
-        else div.classList.add("ok");
+        if (log.severity === "CRITICAL") {
+            div.classList.add("critical");
+        } else if (log.severity === "WARNING") {
+            div.classList.add("warning");
+        } else {
+            div.classList.add("ok");
+        }
 
-        div.innerText = `[${log.time}] ${log.severity} | ΔT:${log.delta_temperature} ΔH:${log.delta_humidity} ΔP:${log.delta_pressure}`;
+        // Affichage enrichi avec le message complet
+        let logText = `[${log.time}] ${log.severity}`;
+        
+        if (log.message) {
+            logText += `\n   ${log.message}`;
+        } else {
+            logText += ` | ΔTemp:${log.delta_temperature}°C ΔHum:${log.delta_humidity}% ΔPres:${log.delta_pressure}hPa`;
+        }
+        
+        div.innerText = logText;
         container.appendChild(div);
     });
 }
 
-function createChart(ctx) {
+function createChart(ctx, label, color) {
     return new Chart(ctx, {
         type: 'line',
         data: {
             labels: [],
             datasets: [{
-                label: '',
+                label: label,
                 data: [],
-                tension: 0.3
+                borderColor: color,
+                backgroundColor: color + '33',
+                tension: 0.4,
+                fill: true,
+                borderWidth: 2,
+                pointRadius: 3,
+                pointHoverRadius: 5
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'white'
+                    }
+                }
+            },
             scales: {
                 x: {
                     ticks: {
+                        color: 'white',
                         maxRotation: 0,
                         autoSkip: true,
-                        maxTicksLimit: 6
+                        maxTicksLimit: 8
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: 'white'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
                     }
                 }
+            },
+            animation: {
+                duration: 0 // Désactive les animations pour plus de réactivité
             }
         }
     });
 }
 
 window.onload = function() {
-    mqttChart = createChart(document.getElementById('mqttChart'));
-    coapChart = createChart(document.getElementById('coapChart'));
+    mqttChart = createChart(
+        document.getElementById('mqttChart'), 
+        'MQTT', 
+        '#3b82f6'
+    );
+    
+    coapChart = createChart(
+        document.getElementById('coapChart'), 
+        'CoAP', 
+        '#10b981'
+    );
 
     document.getElementById("metricSelector").addEventListener("change", function() {
         currentMetric = this.value;
         fetchData();
     });
 
-    setInterval(fetchData, 3000);
+    // Fetch initial
     fetchData();
+    
+    // Refresh toutes les 3 secondes
+    setInterval(fetchData, 3000);
 }
 
 </script>
