@@ -6,9 +6,9 @@
 // CONFIGURATION
 // ==============================
 
-const char* ssid = "Ma_Box_Isolee";
+const char* ssid = "Greg";
 const char* password = "12345678";
-const char* mqtt_server = "192.168.10.6";
+const char* mqtt_server = "172.20.10.4";
 
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
