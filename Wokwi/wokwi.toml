@@ -1,0 +1,5 @@
+# Forward http://localhost:8180 to port 80 on the simulated ESP32:
+version = 1
+firmware = 'arduino.esp32/main.ino.bin'
+elf = 'build/arduino.esp32/main.ino.elf'
+diagram = 'diagram.json'
