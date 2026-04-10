@@ -2,9 +2,6 @@
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 
-// ==============================
-// CONFIGURATION
-// ==============================
 
 const char* ssid = "Greg";
 const char* password = "12345678";
@@ -13,9 +10,7 @@ const char* mqtt_server = "172.20.10.4";
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
 
-// ==============================
-// SEUILS LOCAUX
-// ==============================
+
 
 float tempMin = 20.0;
 float tempMax = 27.0;
@@ -26,9 +21,7 @@ float humMax = 60.0;
 float presMin = 95.0;
 float presMax = 105.0;
 
-// ==============================
-// CONNEXION WIFI
-// ==============================
+
 
 void connectWiFi() {
   Serial.print("Connexion WiFi...");
@@ -42,9 +35,7 @@ void connectWiFi() {
   Serial.println(WiFi.localIP());
 }
 
-// ==============================
-// CONNEXION MQTT
-// ==============================
+
 
 void reconnect() {
   while (!client.connected()) {
@@ -64,9 +55,7 @@ void reconnect() {
   }
 }
 
-// ==============================
-// CALLBACK MQTT
-// ==============================
+
 
 void callback(char* topic, byte* payload, unsigned int length) {
 
@@ -83,9 +72,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     return;
   }
 
-  // =====================================================
-  // 1️⃣ Vérification locale capteurs (MQTT direct MKR)
-  // =====================================================
+
 
   if (String(topic) == "iot/mkr1010/sensors") {
 
@@ -124,9 +111,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.println("Etat capteurs publié");
   }
 
-  // =====================================================
-  // 2️⃣ Analyse sécurité multi-protocole
-  // =====================================================
+
 
   if (String(topic) == "iot/security/analysis") {
 
@@ -135,13 +120,13 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.println("\n=== Analyse Sécurité Réseau ===");
 
     if (severity == "CRITICAL") {
-      Serial.println("🚨 ALERTE CRITIQUE !");
+      Serial.println(" ALERTE CRITIQUE !");
     }
     else if (severity == "WARNING") {
-      Serial.println("⚠️ Avertissement sécurité");
+      Serial.println(" Avertissement sécurité");
     }
     else {
-      Serial.println("🟢 Réseau cohérent");
+      Serial.println(" Réseau cohérent");
     }
 
     // Création log complet
@@ -160,9 +145,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
 }
 
-// ==============================
-// SETUP
-// ==============================
+
 
 void setup() {
   Serial.begin(9600);
@@ -174,9 +157,7 @@ void setup() {
   client.setCallback(callback);
 }
 
-// ==============================
-// LOOP
-// ==============================
+
 
 void loop() {
   if (!client.connected()) {
