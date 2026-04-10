@@ -4,9 +4,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# ===============================
-# CONFIGURATION INFLUXDB
-# ===============================
+
 
 INFLUX_HOST = "localhost"
 INFLUX_PORT = 8086
@@ -15,18 +13,14 @@ INFLUX_DB = "iotdata"
 influx = InfluxDBClient(host=INFLUX_HOST, port=INFLUX_PORT)
 influx.switch_database(INFLUX_DB)
 
-# ===============================
-# ROUTE PRINCIPALE
-# ===============================
+
 
 @app.route("/")
 def dashboard():
     return render_template("dashboard.html")
 
 
-# ===============================
-# API DATA POUR LES GRAPHES
-# ===============================
+
 
 @app.route("/api/data")
 def get_data():
@@ -65,9 +59,7 @@ def get_data():
     mqtt_data = query_measurement("sensors")
     coap_data = query_measurement("sensors_coap")
 
-    # ===============================
-    # LOGS SÉCURITÉ AVEC ÉTAT GLOBAL
-    # ===============================
+
 
     try:
         logs_query = "SELECT * FROM security_logs ORDER BY time DESC LIMIT 50"
@@ -111,9 +103,7 @@ def get_data():
                 "attack_type": log.get("attack_type", "none")
             })
 
-        # ===============================
-        # CALCUL SCORE DE RÉSILIENCE
-        # ===============================
+
 
         total = len(logs_raw)
 
@@ -124,9 +114,7 @@ def get_data():
             impact = (critical_count * 3 + warning_count)
             resilience_score = max(0, 100 - int((impact / total) * 100))
 
-        # ===============================
-        # STATISTIQUES ATTAQUES
-        # ===============================
+
         
         attack_stats = {
             "total_attacks": critical_count + warning_count,
@@ -167,9 +155,7 @@ def get_data():
     })
 
 
-# ===============================
-# LANCEMENT SERVEUR
-# ===============================
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
