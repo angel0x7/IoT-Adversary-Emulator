@@ -70,7 +70,7 @@ class AttackMonitor:
                 print(f"Légitimes      : {total - injected}")
                 print(f"Injectés       : {injected}")
                 
-                bar = "█" * int(rate/5) + "-" * (20 - int(rate/5))
+                bar = "" * int(rate/5) + "-" * (20 - int(rate/5))
                 print(f"\nIMPACT: [{bar}]")
                 
                 time.sleep(1)
