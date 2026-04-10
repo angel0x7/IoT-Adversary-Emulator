@@ -16,7 +16,7 @@ class SensorResource(resource.Resource):
     async def render_post(self, request):
         try:
             payload = request.payload.decode("utf-8")
-            print("📥 Reçu CoAP :", payload)
+            print("Reçu CoAP :", payload)
 
             data = json.loads(payload)
 
@@ -31,12 +31,12 @@ class SensorResource(resource.Resource):
             }]
 
             influx.write_points(json_body)
-            print("✅ Écrit dans InfluxDB (CoAP)")
+            print("Écrit dans InfluxDB (CoAP)")
 
             return Message(code=aiocoap.CONTENT, payload=b"OK")
 
         except Exception as e:
-            print("❌ Erreur CoAP :", e)
+            print(" Erreur CoAP :", e)
             return Message(code=BAD_REQUEST, payload=b"ERROR")
 
 async def main():
@@ -44,7 +44,7 @@ async def main():
     root.add_resource(['sensors'], SensorResource())
 
     await Context.create_server_context(root, bind=('0.0.0.0', 5683))
-    print("🚀 Serveur CoAP démarré sur UDP 5683")
+    print(" Serveur CoAP démarré sur UDP 5683")
     await asyncio.get_running_loop().create_future()
 
 if __name__ == "__main__":
