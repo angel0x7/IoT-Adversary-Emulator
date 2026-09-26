@@ -12,6 +12,13 @@ Cet outil s’adresse aux **chercheurs** et **professionnels de la cybersécurit
 Projet réalisé dans le cadre du **PPE (Projet Pluridisciplinaire en Équipe)** à l’**ECE Paris** en majeure **Cyber & Data**.
 
 ---
+##  Documents inclus
+| Fichier | Description |
+|----------|-------------|
+| [`note-de-cadrage-ppe.pdf`](note-de-cadrage-ppe.pdf) | Note de cadrage du projet |
+| [`Topologie_PPE.png`](Topologie_PPE.png) | Schéma réseau OT/IT du prototype |
+| [`PPE Soutenance finale.pdf`](PPE_Soutenance_finale.pdf) | Présentation Finale |
+---
 
 ##  Objectifs
 - Développer un **émulateur d’attaques IoT** modulable et extensible.  
@@ -79,14 +86,6 @@ Méthodologie : **Agile (Scrum / Kanban)** avec sprints, suivi régulier et vali
 - Démonstrations lors des soutenances PPE.  
 - Publication possible de jeux de données (logs anonymisés).  
 - Perspectives d’extension : intégration dans des plateformes de **cyber range IoT**.  
-
----
-
-##  Documents inclus
-| Fichier | Description |
-|----------|-------------|
-| [`note-de-cadrage-ppe.pdf`](note-de-cadrage-ppe.pdf) | Note de cadrage du projet |
-| [`Topologie_PPE.png`](Topologie_PPE.png) | Schéma réseau OT/IT du prototype |
 
 ---
 
